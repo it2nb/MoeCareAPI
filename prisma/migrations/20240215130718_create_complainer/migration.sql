@@ -1,0 +1,33 @@
+-- CreateTable
+CREATE TABLE `complainer` (
+    `complainerID` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `complainerPrefixTh` VARCHAR(10) NOT NULL,
+    `complainerFirstnameTh` VARCHAR(50) NOT NULL,
+    `complainerLastnameTh` VARCHAR(50) NOT NULL,
+    `complainerPrefixEn` VARCHAR(10) NULL,
+    `complainerFirstnameEn` VARCHAR(50) NULL,
+    `complainerLastnameEn` VARCHAR(50) NULL,
+    `complainerGender` VARCHAR(10) NULL,
+    `complainerBirthday` DATE NOT NULL,
+    `complainerIDcard` VARCHAR(13) NOT NULL,
+    `complainerPhone` VARCHAR(10) NOT NULL,
+    `complainerEmail` VARCHAR(10) NOT NULL,
+    `complainerAddress` VARCHAR(100) NOT NULL,
+    `provinceID` VARCHAR(3) NOT NULL,
+    `districtID` VARCHAR(5) NOT NULL,
+    `subdistrictID` VARCHAR(7) NOT NULL,
+    `postcode` VARCHAR(5) NOT NULL,
+    `complainerDefective` VARCHAR(10) NOT NULL,
+    `complainerPassword` VARCHAR(50) NOT NULL,
+    `complainerEnable` VARCHAR(20) NOT NULL,
+    `complainerCreated` DATETIME NOT NULL,
+    `createdUserID` INTEGER UNSIGNED NULL,
+    `complainerUpdated` DATETIME NULL,
+    `updatedUserID` INTEGER UNSIGNED NULL,
+
+    UNIQUE INDEX `complainer_complainerIDcard_key`(`complainerIDcard`),
+    UNIQUE INDEX `complainer_complainerPhone_key`(`complainerPhone`),
+    UNIQUE INDEX `complainer_complainerEmail_key`(`complainerEmail`),
+    INDEX `complainer_complainerID_complainerPhone_complainerEmail_comp_idx`(`complainerID`, `complainerPhone`, `complainerEmail`, `complainerPassword`),
+    PRIMARY KEY (`complainerID`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

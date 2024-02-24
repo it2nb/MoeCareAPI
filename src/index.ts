@@ -9,6 +9,9 @@ app.use(express.json())
 const users = require('./users.ts')
 app.use('/users', users)
 
+const complainer = require('./complainer.ts')
+app.use('/complainer', complainer)
+
 app.get("/:universalURL", (req, res) => { 
   res.send("404 URL NOT FOUND"); 
 }); 

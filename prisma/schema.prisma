@@ -10,6 +10,34 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model complainer {
+  complainerID  BigInt  @id @default(autoincrement()) @db.UnsignedBigInt
+  complainerPrefixTh  String  @db.VarChar(10)
+  complainerFirstnameTh String  @db.VarChar(50)
+  complainerLastnameTh  String  @db.VarChar(50)
+  complainerPrefixEn  String? @db.VarChar(10) 
+  complainerFirstnameEn String? @db.VarChar(50)
+  complainerLastnameEn  String? @db.VarChar(50)
+  complainerGender  String? @db.VarChar(10)
+  complainerBirthday  DateTime  @db.Date
+  complainerIDcard  String  @db.VarChar(13) @unique
+  complainerPhone  String @db.VarChar(10) @unique
+  complainerEmail  String @db.VarChar(10) @unique
+  complainerAddress  String @db.VarChar(100)
+  provinceID  String  @db.VarChar(3)
+  districtID  String  @db.VarChar(5)
+  subdistrictID  String @db.VarChar(7)
+  postcode  String  @db.VarChar(5)
+  complainerDefective  String @db.VarChar(10)
+  complainerPassword  String  @db.VarChar(50)
+  complainerEnable  String  @db.VarChar(20)
+  complainerCreated  DateTime @db.DateTime()
+  createdUserID  Int? @db.UnsignedInt
+  complainerUpdated  DateTime? @db.DateTime()
+  updatedUserID  Int? @db.UnsignedInt
+  @@index([complainerID, complainerPhone, complainerEmail, complainerPassword])
+}
+
 model users {
   userID       Int     @id @default(autoincrement()) @db.UnsignedInt
   userName     String  @db.VarChar(50)
