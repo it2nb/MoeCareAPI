@@ -31,15 +31,19 @@ router.get('/', (req, res)=> {
     res.send("Hello")
 })
 
-router.post('login', urlencodedParser, async(req, res) => {
+router.post('/login', urlencodedParser, async(req, res) => {
   const {username, password} = req.body
 
   try {
     try{
       const query = await prisma.$queryRaw`
-        SELECT * FROM users Where userName=${username} and userPassword=md5(${password})
+        SELECT * FROM complainer Where (complainerPhone=${username} or complainerEmail=${username}) and complainerPassword=md5(${password})
       `
-      res.json(query)
+
+      const json = JSON.stringify(query, replacer);
+      const decodedData = JSON.parse(json, reviver);
+
+      res.json(decodedData)
     } catch(e) {
       res.json(false)
     }

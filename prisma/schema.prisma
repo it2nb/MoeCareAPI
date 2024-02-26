@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,30 +8,31 @@ datasource db {
 }
 
 model complainer {
-  complainerID  BigInt  @id @default(autoincrement()) @db.UnsignedBigInt
-  complainerPrefixTh  String  @db.VarChar(10)
-  complainerFirstnameTh String  @db.VarChar(50)
-  complainerLastnameTh  String  @db.VarChar(50)
-  complainerPrefixEn  String? @db.VarChar(10) 
-  complainerFirstnameEn String? @db.VarChar(50)
-  complainerLastnameEn  String? @db.VarChar(50)
-  complainerGender  String? @db.VarChar(10)
-  complainerBirthday  DateTime  @db.Date
-  complainerIDcard  String  @db.VarChar(13) @unique
-  complainerPhone  String @db.VarChar(10) @unique
-  complainerEmail  String @db.VarChar(10) @unique
-  complainerAddress  String @db.VarChar(100)
-  provinceID  String  @db.VarChar(3)
-  districtID  String  @db.VarChar(5)
-  subdistrictID  String @db.VarChar(7)
-  postcode  String  @db.VarChar(5)
-  complainerDefective  String @db.VarChar(10)
-  complainerPassword  String  @db.VarChar(50)
-  complainerEnable  String  @db.VarChar(20)
-  complainerCreated  DateTime @db.DateTime()
-  createdUserID  Int? @db.UnsignedInt
-  complainerUpdated  DateTime? @db.DateTime()
-  updatedUserID  Int? @db.UnsignedInt
+  complainerID          BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  complainerPrefixTh    String    @db.VarChar(10)
+  complainerFirstnameTh String    @db.VarChar(50)
+  complainerLastnameTh  String    @db.VarChar(50)
+  complainerPrefixEn    String?   @db.VarChar(10)
+  complainerFirstnameEn String?   @db.VarChar(50)
+  complainerLastnameEn  String?   @db.VarChar(50)
+  complainerGender      String?   @db.VarChar(10)
+  complainerBirthday    DateTime  @db.Date
+  complainerIDcard      String    @unique @db.VarChar(13)
+  complainerPhone       String    @unique @db.VarChar(15)
+  complainerEmail       String    @unique @db.VarChar(50)
+  complainerAddress     String    @db.VarChar(100)
+  provinceID            Int
+  districtID            Int
+  subdistrictID         Int
+  postcode              String    @db.VarChar(5)
+  complainerDefective   String    @db.VarChar(10)
+  complainerPassword    String    @db.VarChar(50)
+  complainerEnable      String    @db.VarChar(20)
+  complainerCreated     DateTime  @db.DateTime(0)
+  createdUserID         Int?      @db.UnsignedInt
+  complainerUpdated     DateTime? @db.DateTime(0)
+  updatedUserID         Int?      @db.UnsignedInt
+
   @@index([complainerID, complainerPhone, complainerEmail, complainerPassword])
 }
 
@@ -43,8 +41,10 @@ model users {
   userName     String  @db.VarChar(50)
   userPassword String  @db.VarChar(50)
   userStatus   String  @db.VarChar(20)
-  agency       agency? @relation(fields: [agencyID], references: [agencyID])
   agencyID     Int?    @db.UnsignedInt
+  agency       agency? @relation(fields: [agencyID], references: [agencyID])
+
+  @@index([agencyID], map: "users_agencyID_fkey")
 }
 
 model agency {
@@ -52,4 +52,33 @@ model agency {
   agencyName String  @db.VarChar(100)
   agencyCode String  @unique @db.VarChar(20)
   users      users[]
+}
+
+model district {
+  districtID   Int    @default(0)
+  districtName String @db.VarChar(100)
+  provinceID   Int    @default(0)
+
+  @@id([districtID, provinceID])
+  @@index([districtID, provinceID], map: "prefecture_ID")
+}
+
+model province {
+  provinceNo    Int    @default(0)
+  provinceID    Int    @id @default(0)
+  provinceName  String @db.VarChar(100)
+  regionID      Int    @default(0)
+  regiongroupID Int
+
+  @@index([provinceNo, provinceID, regionID], map: "province_no")
+}
+
+model subdistrict {
+  subdistrictID   Int    @id @default(0)
+  subdistrictName String @db.VarChar(100)
+  post            Int    @default(0)
+  districtID      Int    @default(0)
+
+  @@index([subdistrictID, districtID], map: "district_ID")
+  @@index([districtID], map: "prefectur_id")
 }

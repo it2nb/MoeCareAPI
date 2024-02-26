@@ -12,6 +12,15 @@ app.use('/users', users)
 const complainer = require('./complainer.ts')
 app.use('/complainer', complainer)
 
+const province = require('./province.ts')
+app.use('/province', province)
+
+const district = require('./district.ts')
+app.use('/district', district)
+
+const subdistrict = require('./subdistrict.ts')
+app.use('/subdistrict', subdistrict)
+
 app.get("/:universalURL", (req, res) => { 
   res.send("404 URL NOT FOUND"); 
 }); 
