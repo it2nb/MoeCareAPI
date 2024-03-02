@@ -7,6 +7,37 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model complain {
+  complainID  BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  complainType  String @db.VarChar(20)
+  complainTitle String @db.VarChar(100)
+  complainDetail  String?
+  complainDate  DateTime @db.DateTime()
+  complainStatus  String @db.VarChar(20)
+  agencyID Int?  @db.UnsignedInt
+  agency   agency? @relation(fields: [agencyID], references: [agencyID])
+  schoolID  BigInt?  @db.UnsignedBigInt
+  complainerID  BigInt @db.UnsignedBigInt
+  complainer complainer? @relation(fields: [complainerID], references: [complainerID])
+  caseagency  caseagency[]
+}
+
+model caseagency {
+  complainID BigInt @db.UnsignedBigInt
+  complain  complain? @relation(fields: [complainID], references: [complainID])
+  caseagencyNum Int @db.UnsignedInt
+  agencyID  Int @db.UnsignedInt
+  agency  agency @relation("caseagency" ,fields: [agencyID], references: [agencyID])
+  caseagencyStatus String @db.VarChar(20)
+  caseagnecyDetail String?
+  casetoagencyID Int? @db.UnsignedInt
+  toagency  agency? @relation("casetoagency" ,fields: [casetoagencyID], references: [agencyID])
+  caseagnecyDate  DateTime @db.DateTime()
+  caseagencyUpdate DateTime @db.DateTime()
+
+  @@id([complainID, caseagencyNum, agencyID])
+}
+
 model complainer {
   complainerID          BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
   complainerPrefixTh    String    @db.VarChar(10)
@@ -22,8 +53,11 @@ model complainer {
   complainerEmail       String    @unique @db.VarChar(50)
   complainerAddress     String    @db.VarChar(100)
   provinceID            Int
+  province              province? @relation(fields: [provinceID], references: [provinceID])
   districtID            Int
+  district              district? @relation(fields: [districtID], references: [districtID])
   subdistrictID         Int
+  subdistrict           subdistrict? @relation(fields: [subdistrictID], references: [subdistrictID])
   postcode              String    @db.VarChar(5)
   complainerDefective   String    @db.VarChar(10)
   complainerPassword    String    @db.VarChar(50)
@@ -32,8 +66,67 @@ model complainer {
   createdUserID         Int?      @db.UnsignedInt
   complainerUpdated     DateTime? @db.DateTime(0)
   updatedUserID         Int?      @db.UnsignedInt
+  complain              complain[]
 
   @@index([complainerID, complainerPhone, complainerEmail, complainerPassword])
+}
+
+model agency {
+  agencyID   Int     @id @default(autoincrement()) @db.UnsignedInt
+  agencyName String  @db.VarChar(100)
+  agencyCode String  @unique @db.VarChar(20)
+  users      users[]
+  complain   complain[]
+  caseagency  caseagency[] @relation("caseagency")
+  casetoagency  caseagency[] @relation("casetoagency")
+}
+
+model school {
+  schoolID  BigInt  @id @default(autoincrement()) @db.UnsignedBigInt
+  schoolCode String @unique @db.VarChar(20)
+  schoolType String @db.VarChar(50)
+  schoolName  String @db.VarChar(150)
+  schoolAddress String
+  provinceID            Int
+  province              province? @relation(fields: [provinceID], references: [provinceID])
+  districtID            Int
+  district              district? @relation(fields: [districtID], references: [districtID])
+  subdistrictID         Int
+  subdistrict           subdistrict? @relation(fields: [subdistrictID], references: [subdistrictID])
+}
+
+model district {
+  districtID   Int    @id @default(0)
+  districtName String @db.VarChar(100)
+  provinceID   Int    @default(0)
+  complainer   complainer[]
+  school        school[]
+
+  @@index([districtID, provinceID], map: "prefecture_ID")
+}
+
+model province {
+  provinceNo    Int    @default(0)
+  provinceID    Int    @id @default(0)
+  provinceName  String @db.VarChar(100)
+  regionID      Int    @default(0)
+  regiongroupID Int
+  complainer    complainer[]
+  school        school[]
+
+  @@index([provinceNo, provinceID, regionID], map: "province_no")
+}
+
+model subdistrict {
+  subdistrictID   Int    @id @default(0)
+  subdistrictName String @db.VarChar(100)
+  post            Int    @default(0)
+  districtID      Int    @default(0)
+  complainer      complainer[]
+  school        school[]
+
+  @@index([subdistrictID, districtID], map: "district_ID")
+  @@index([districtID], map: "prefectur_id")
 }
 
 model users {
@@ -45,40 +138,4 @@ model users {
   agency       agency? @relation(fields: [agencyID], references: [agencyID])
 
   @@index([agencyID], map: "users_agencyID_fkey")
-}
-
-model agency {
-  agencyID   Int     @id @default(autoincrement()) @db.UnsignedInt
-  agencyName String  @db.VarChar(100)
-  agencyCode String  @unique @db.VarChar(20)
-  users      users[]
-}
-
-model district {
-  districtID   Int    @default(0)
-  districtName String @db.VarChar(100)
-  provinceID   Int    @default(0)
-
-  @@id([districtID, provinceID])
-  @@index([districtID, provinceID], map: "prefecture_ID")
-}
-
-model province {
-  provinceNo    Int    @default(0)
-  provinceID    Int    @id @default(0)
-  provinceName  String @db.VarChar(100)
-  regionID      Int    @default(0)
-  regiongroupID Int
-
-  @@index([provinceNo, provinceID, regionID], map: "province_no")
-}
-
-model subdistrict {
-  subdistrictID   Int    @id @default(0)
-  subdistrictName String @db.VarChar(100)
-  post            Int    @default(0)
-  districtID      Int    @default(0)
-
-  @@index([subdistrictID, districtID], map: "district_ID")
-  @@index([districtID], map: "prefectur_id")
 }
