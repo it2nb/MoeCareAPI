@@ -7,9 +7,16 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model complaintype {
+  complaintypeID Int @id @default(autoincrement()) @db.UnsignedInt
+  complaintypeName String @db.VarChar(200)
+  complain  complain[]
+}
+
 model complain {
   complainID  BigInt @id @default(autoincrement()) @db.UnsignedBigInt
-  complainType  String @db.VarChar(20)
+  complaintypeID  Int @db.UnsignedInt
+  complaintype complaintype? @relation(fields: [complaintypeID], references: [complaintypeID])
   complainTitle String @db.VarChar(100)
   complainDetail  String?
   complainDate  DateTime @db.DateTime()
