@@ -25,7 +25,7 @@ model complain {
   agency   agency? @relation(fields: [agencyID], references: [agencyID])
   schoolID  BigInt?  @db.UnsignedBigInt
   complainerID  BigInt @db.UnsignedBigInt
-  complainer complainer? @relation(fields: [complainerID], references: [complainerID])
+  complainer complainer @relation(fields: [complainerID], references: [complainerID])
   caseagency  caseagency[]
 }
 

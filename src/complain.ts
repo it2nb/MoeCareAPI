@@ -40,24 +40,26 @@ router.get('/', async (req, res)=> {
 
 router.post('/insert', urlencodedParser, async(req, res) => {
     const {complainTitle, complainDetail, complainDate, complainStatus, schoolID, complainerID, agencyID, complaintypeID} = req.body
-    let data = {
+    let data: Prisma.complainCreateInput
+    data = {
         complainTitle: complainTitle,
         complainDetail: complainDetail,
         complainDate: complainDate,
         complainStatus: complainStatus,
         schoolID: schoolID,
-        complainerID: parseInt(complainerID),
-        agencyID: agencyID,
-        complaintypeID: complaintypeID
+        complainer: complainerID,
+        agency: agencyID,
+        complaintype: complaintypeID
     }
 
     try{
-        const insertData = await prisma.complain.create({data: data});
+      const insertData = await prisma.$executeRaw`INSERT Ignore Into complain(complainTitle, complainDetail, complainDate, complainStatus, schoolID, complainerID, agencyID, complaintypeID) Values (${complainTitle}, ${complainDetail}, ${complainDate}, ${complainStatus}, ${schoolID}, ${complainerID}, ${agencyID}, ${complaintypeID})`;
+        // const insertData = await prisma.complain.create({data: data});
         const json = JSON.stringify(insertData, replacer);
         const decodedData = JSON.parse(json, reviver);
         res.json(decodedData)
     } catch(e) {
-        res.json(data)
+        res.json(e)
     }
 });
 
