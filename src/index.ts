@@ -9,6 +9,15 @@ app.use(express.json())
 const users = require('./users.ts')
 app.use('/users', users)
 
+const agency = require('./agency.ts')
+app.use('/agency', agency)
+
+const complaintype = require('./complaintype.ts')
+app.use('/complaintype', complaintype)
+
+const complain = require('./complain.ts')
+app.use('/complain', complain)
+
 const complainer = require('./complainer.ts')
 app.use('/complainer', complainer)
 

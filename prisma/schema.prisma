@@ -19,7 +19,7 @@ model complain {
   complaintype complaintype? @relation(fields: [complaintypeID], references: [complaintypeID])
   complainTitle String @db.VarChar(100)
   complainDetail  String?
-  complainDate  DateTime @db.DateTime()
+  complainDate  DateTime @db.DateTime(0)
   complainStatus  String @db.VarChar(20)
   agencyID Int?  @db.UnsignedInt
   agency   agency? @relation(fields: [agencyID], references: [agencyID])
@@ -39,8 +39,8 @@ model caseagency {
   caseagnecyDetail String?
   casetoagencyID Int? @db.UnsignedInt
   toagency  agency? @relation("casetoagency" ,fields: [casetoagencyID], references: [agencyID])
-  caseagnecyDate  DateTime @db.DateTime()
-  caseagencyUpdate DateTime @db.DateTime()
+  caseagnecyDate  DateTime @db.DateTime(0)
+  caseagencyUpdate DateTime @db.DateTime(0)
 
   @@id([complainID, caseagencyNum, agencyID])
 }
