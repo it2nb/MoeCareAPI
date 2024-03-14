@@ -18,7 +18,7 @@ model complain {
   complaintypeID  Int @db.UnsignedInt
   complaintype complaintype? @relation(fields: [complaintypeID], references: [complaintypeID])
   complainTitle String @db.VarChar(100)
-  complainDetail  String?
+  complainDetail  String? @db.Text
   complainDate  DateTime @db.DateTime(0)
   complainStatus  String @db.VarChar(20)
   agencyID Int?  @db.UnsignedInt
@@ -26,6 +26,7 @@ model complain {
   schoolID  BigInt?  @db.UnsignedBigInt
   complainerID  BigInt @db.UnsignedBigInt
   complainer complainer @relation(fields: [complainerID], references: [complainerID])
+  complainImages String? @db.Text
   caseagency  caseagency[]
 }
 
@@ -36,7 +37,7 @@ model caseagency {
   agencyID  Int @db.UnsignedInt
   agency  agency @relation("caseagency" ,fields: [agencyID], references: [agencyID])
   caseagencyStatus String @db.VarChar(20)
-  caseagnecyDetail String?
+  caseagnecyDetail String? @db.Text
   casetoagencyID Int? @db.UnsignedInt
   toagency  agency? @relation("casetoagency" ,fields: [casetoagencyID], references: [agencyID])
   caseagnecyDate  DateTime @db.DateTime(0)
@@ -93,7 +94,7 @@ model school {
   schoolCode String @unique @db.VarChar(20)
   schoolType String @db.VarChar(50)
   schoolName  String @db.VarChar(150)
-  schoolAddress String
+  schoolAddress String @db.Text
   provinceID            Int
   province              province? @relation(fields: [provinceID], references: [provinceID])
   districtID            Int

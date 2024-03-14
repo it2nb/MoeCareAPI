@@ -1,5 +1,6 @@
 import {Prisma, PrismaClient} from '@prisma/client'
 import express from 'express'
+import fs from 'fs';
 
 const prisma = new PrismaClient()
 prisma.$connect()
@@ -11,12 +12,15 @@ const evidenceUpload = multer({
   //dest: 'uploads/',
   storage: multer.diskStorage({
     destination(req: any, file:any, cb: (arg0: null, arg1: string) => void) {
-        cb(null, "uploads/");
+        cb(null, "uploads/evidences/");
     },
     filename(req: any, file: {
       originalname: any, fieldname: any 
   }, cb: (arg0: null, arg1: string) => void) {
-        cb(null, `${file.originalname}-${Date.now()}`);
+        let str = file.originalname.split(".");
+        if(str.length > 1) {
+          cb(null, `${str[0]}-${Date.now()}.${str[str.length-1]}`);
+        }
     },
   }),
 })
