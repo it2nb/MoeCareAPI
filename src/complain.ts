@@ -38,6 +38,22 @@ router.get('/', async (req, res)=> {
     }
 })
 
+router.get('/complainer/:complainerID', async (req, res)=> {
+  var params = req.params
+  try{
+    const query = await prisma.complain.findMany({
+      where: {
+        complainerID: parseInt(params.complainerID)
+      }
+    })
+    const json = JSON.stringify(query, replacer)
+    const decodedData = JSON.parse(json, reviver)
+    res.json(decodedData)
+  } catch(e) {
+    res.json({result: false})
+  }
+})
+
 router.post('/insert', urlencodedParser, async(req, res) => {
     const {complainTitle, complainDetail, complainDate, complainStatus, schoolID, complainerID, agencyID, complaintypeID, complainImages} = req.body
     let data: Prisma.complainCreateInput

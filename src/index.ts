@@ -1,12 +1,14 @@
 import {Prisma, PrismaClient} from '@prisma/client'
 import express from 'express'
-import fs from 'fs';
 
 const prisma = new PrismaClient()
 prisma.$connect()
 const app = express()
 app.use(express.json())
 const multer = require('multer')
+const sharp = require('sharp')
+const fs = require('fs')
+const path = require('path')
 
 const evidenceUpload = multer({
   //dest: 'uploads/',
@@ -53,7 +55,7 @@ app.get("/:universalURL", (req, res) => {
   res.send("404 URL NOT FOUND")
 }); 
 
-app.post('/upload/evidence', evidenceUpload.single('evidenceFile'), function(req, res) {
+app.post('/upload/evidence', evidenceUpload.single('evidenceFile'), async function(req, res) {
   try {
       res.json({
         result: true,
