@@ -4,17 +4,24 @@ import express from 'express'
 const prisma = new PrismaClient()
 prisma.$connect()
 const app = express()
-app.use(express.json())
 const multer = require('multer')
 const sharp = require('sharp')
 const fs = require('fs')
 const path = require('path')
+app.use('/evidencefiles',express.static('upload/evidences'))
+app.use(express.json())
 
 const evidenceUpload = multer({
   //dest: 'uploads/',
   storage: multer.diskStorage({
     destination(req: any, file:any, cb: (arg0: null, arg1: string) => void) {
-        cb(null, "uploads/evidences/");
+      var path = "upload/evidences"
+      if(!fs.existsSync("upload")){
+        fs.mkdirSync("upload")
+      }
+      if(!fs.existsSync(path))
+      fs.mkdirSync(path)
+      cb(null, path)
     },
     filename(req: any, file: {
       originalname: any, fieldname: any 
