@@ -29,7 +29,14 @@ router.use(express.json())
 
 router.get('/', async (req, res)=> {
     try {
-        const query = await prisma.complain.findMany();
+        const query = await prisma.complain.findMany({
+          include: {
+            complaintype: true,
+            caseagency: true,
+            agency: true,
+            complainer: true,
+          }
+        });
         const json = JSON.stringify(query, replacer);
         const decodedData = JSON.parse(json, reviver);
         res.json(decodedData)
@@ -42,6 +49,12 @@ router.get('/complainer/:complainerID', async (req, res)=> {
   var params = req.params
   try{
     const query = await prisma.complain.findMany({
+      include: {
+        complaintype: true,
+        caseagency: true,
+        agency: true,
+        complainer: true,
+      },
       where: {
         complainerID: parseInt(params.complainerID)
       }
