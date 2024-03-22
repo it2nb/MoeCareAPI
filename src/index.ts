@@ -1,6 +1,9 @@
 import {Prisma, PrismaClient} from '@prisma/client'
 import express from 'express'
 
+var bodyParser = require('body-parser')
+var urlencodedParser = bodyParser.urlencoded({ extended: false })
+
 const prisma = new PrismaClient()
 prisma.$connect()
 const app = express()
@@ -46,6 +49,9 @@ app.use('/complaintype', complaintype)
 const complain = require('./complain.ts')
 app.use('/complain', complain)
 
+const caseagency = require('./caseagency.ts')
+app.use('/caseagency', caseagency)
+
 const complainer = require('./complainer.ts')
 app.use('/complainer', complainer)
 
@@ -64,14 +70,24 @@ app.get("/:universalURL", (req, res) => {
 
 app.post('/upload/evidence', evidenceUpload.single('evidenceFile'), async function(req, res) {
   try {
-      res.json({
-        result: true,
-        file: req.file
-      })
+    res.json({
+      result: true,
+      file: req.file
+    })
   } catch(e) {
     res.send(false)
   }
   
+})
+
+app.post('/delete/evidence', urlencodedParser, async (req, res)=> {
+  const {complainImages} = req.body;
+  try {
+    fs.unlink('upload/evidences/'+complainImages)
+    res.send(true)
+  } catch(e) {
+    res.send(e)
+  }
 })
 
 const server = app.listen(3000, () =>
