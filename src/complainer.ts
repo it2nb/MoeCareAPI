@@ -31,6 +31,27 @@ router.get('/', (req, res)=> {
     res.send("Hello")
 })
 
+router.get('/:complainerID', async(req, res) => {
+  var params = req.params
+  try{
+    const query = await prisma.complainer.findUnique({
+      include: {
+        subdistrict: true,
+        district: true,
+        province: true,
+      },
+      where: {
+        complainerID: parseInt(params.complainerID)
+      }
+    })
+    const json = JSON.stringify(query, replacer)
+    const decodedData = JSON.parse(json, reviver)
+    res.json(decodedData)
+  } catch(e) {
+    res.json({result: false})
+  }
+})
+
 router.post('/login', urlencodedParser, async(req, res) => {
   const {username, password} = req.body
 
@@ -62,6 +83,20 @@ router.post('/insert', urlencodedParser, async(req, res) => {
       res.json(false)
     }
 });
+
+router.post('/update', urlencodedParser, async (req, res)=> {
+  const {complainerID, complainerPrefixTh, complainerFirstnameTh, complainerLastnameTh, complainerPrefixEn, complainerFirstnameEn, complainerLastnameEn, complainerGender, complainerBirthday, complainerIDcard, complainerPhone, complainerEmail, complainerAddress, provinceID, districtID, subdistrictID, postcode, complainerDefective, complainerPassword, complainerEnable, complainerCreated, createdUserID, complainerUpdated, updatedUserID} = req.body
+    
+    try {
+      const updateData = await prisma.$executeRaw`UPDATE complainer Set complainerPrefixTh=${complainerPrefixTh}, complainerFirstnameTh=${complainerFirstnameTh}, complainerLastnameTh=${complainerLastnameTh}, complainerPrefixEn=${complainerPrefixEn}, complainerFirstnameEn=${complainerFirstnameEn}, complainerLastnameEn=${complainerLastnameEn}, complainerGender=${complainerGender}, complainerBirthday=${complainerBirthday}, complainerIDcard=${complainerIDcard}, complainerPhone=${complainerPhone}, complainerEmail=${complainerEmail}, complainerAddress=${complainerAddress}, provinceID=${provinceID}, districtID=${districtID}, subdistrictID=${subdistrictID}, postcode=${postcode}, complainerDefective=${complainerDefective}, complainerEnable=${complainerEnable}, complainerCreated=${complainerCreated}, createdUserID=${createdUserID}, complainerUpdated=${complainerUpdated}, updatedUserID=${updatedUserID} Where complainerID=${complainerID}`;
+      const json = JSON.stringify(updateData, replacer);
+      const decodedData = JSON.parse(json, reviver);
+      res.json(decodedData)
+    } catch(e) {
+      res.send(e)
+    }
+    
+})
 
 router.get("/:universalURL", (req, res) => { 
   res.send("404 URL NOT FOUND"); 
