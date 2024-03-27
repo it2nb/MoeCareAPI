@@ -55,18 +55,18 @@ model complainer {
   complainerFirstnameEn String?   @db.VarChar(50)
   complainerLastnameEn  String?   @db.VarChar(50)
   complainerGender      String?   @db.VarChar(10)
-  complainerBirthday    DateTime  @db.Date
-  complainerIDcard      String    @unique @db.VarChar(13)
+  complainerBirthday    DateTime?  @db.Date
+  complainerIDcard      String?    @unique @db.VarChar(13)
   complainerPhone       String    @unique @db.VarChar(15)
   complainerEmail       String    @unique @db.VarChar(50)
   complainerAddress     String    @db.VarChar(100)
-  provinceID            Int
+  provinceID            Int?
   province              province? @relation(fields: [provinceID], references: [provinceID])
-  districtID            Int
+  districtID            Int?
   district              district? @relation(fields: [districtID], references: [districtID])
-  subdistrictID         Int
+  subdistrictID         Int?
   subdistrict           subdistrict? @relation(fields: [subdistrictID], references: [subdistrictID])
-  postcode              String    @db.VarChar(5)
+  postcode              String?    @db.VarChar(5)
   complainerDefective   String    @db.VarChar(10)
   complainerPassword    String    @db.VarChar(50)
   complainerEnable      String    @db.VarChar(20)
