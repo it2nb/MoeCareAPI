@@ -142,6 +142,7 @@ model users {
   userName     String  @db.VarChar(50)
   userPassword String  @db.VarChar(50)
   userStatus   String  @db.VarChar(20)
+  userType     String  @db.VarChar(20)
   agencyID     Int?    @db.UnsignedInt
   agency       agency? @relation(fields: [agencyID], references: [agencyID])
 
