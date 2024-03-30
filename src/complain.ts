@@ -141,6 +141,23 @@ router.post('/delete', urlencodedParser, async (req, res)=> {
   }
 })
 
+router.get('/count', async (req, res)=>{
+  try{
+    // const query = await prisma.complain.aggregate({
+    //   _count: {
+    //     complainID: true
+    //   }
+    // })
+    const query = await prisma.$queryRaw`SELECT count(complainID) as allQty, sum(if(complainStatus="แจ้งเรื่อง", 1, 0)) as newQty, sum(if(complainStatus="เสร็จสิ้น", 1, 0)) as completeQty From complain`;
+    const json = JSON.stringify(query, replacer);
+    const decodedData = JSON.parse(json, reviver);
+    res.json(decodedData)
+  } catch(e) {
+    res.send(false)
+  }
+
+})
+
 router.get("/:universalURL", (req, res) => { 
   res.send("404 URL NOT FOUND"); 
 }); 
