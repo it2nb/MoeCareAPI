@@ -32,10 +32,24 @@ router.get('/', async (req, res)=> {
         const query = await prisma.complaintype.findMany();
         const json = JSON.stringify(query, replacer);
         const decodedData = JSON.parse(json, reviver);
-        res.json(query)
+        res.json(query);
     } catch(e) {
         res.json(false)
     }
+})
+
+router.get('/countcomplain', async (req, res) => {
+  try {
+    const query = await prisma.$queryRaw`SELECT complaintype.complaintypeID, complaintypeName, ifnull(allQty, 0) as allQty, ifnull(newQty, 0) as newQty, ifnull(completeQty, 0) as completeQty From complaintype 
+    Left Join (
+      SELECT complaintypeID, count(complainID) as allQty, sum(if(complainStatus="แจ้งเรื่อง", 1, 0)) as newQty, sum(if(complainStatus="เสร็จสิ้น", 1, 0)) as completeQty From complain Group By complaintypeID
+    ) as complain On complain.complaintypeID=complaintype.complaintypeID`;
+    const json = JSON.stringify(query, replacer);
+    const decodedData = JSON.parse(json, reviver);
+    res.json(decodedData);
+  } catch(e) {
+    res.send(false)
+  }
 })
 
 router.get("/:universalURL", (req, res) => { 
