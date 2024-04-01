@@ -32,7 +32,7 @@ router.get('/', async (req, res)=> {
         const query = await prisma.complaintype.findMany();
         const json = JSON.stringify(query, replacer);
         const decodedData = JSON.parse(json, reviver);
-        res.json(query);
+        res.json(decodedData);
     } catch(e) {
         res.json(false)
     }

@@ -4,13 +4,15 @@ import express from 'express'
 var bodyParser = require('body-parser')
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
 
+const jwt = require('jsonwebtoken')
+
 const prisma = new PrismaClient()
 prisma.$connect()
 const app = express()
 const multer = require('multer')
 //const sharp = require('sharp')
 const fs = require('fs')
-const path = require('path')
+//const path = require('path')
 app.use('/evidencefiles',express.static('upload/evidences'))
 app.use(express.json())
 
@@ -35,6 +37,17 @@ const evidenceUpload = multer({
         }
     },
   }),
+})
+
+app.use((req, res, next)=>{
+  const authHeader = req.headers['authorization']
+  if (authHeader == null) return res.sendStatus(401) 
+  
+  jwt.verify(authHeader, process.env.TOKEN_SECRET as String, (err: any, user: any) => {
+    if (err) return res.send(false)
+
+    next()
+  })
 })
 
 const users = require('./users.ts')

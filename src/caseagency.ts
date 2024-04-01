@@ -107,10 +107,9 @@ router.post('/update', urlencodedParser, async (req, res)=> {
     try {
       const updateData = await prisma.caseagency.update({
         where: {
-            complainID_caseagencyNum_agencyID: {
+            complainID_caseagnecyDate: {
                 complainID: complainID,
-                caseagencyNum: caseagencyNum,
-                agencyID: agencyID
+                caseagnecyDate: caseagnecyDate
             }
         },
         data: data
@@ -125,14 +124,13 @@ router.post('/update', urlencodedParser, async (req, res)=> {
 })
 
 router.post('/delete', urlencodedParser, async (req, res)=> {
-  const {complainID, caseagencyNum, agencyID} = req.body
+  const {complainID, caseagnecyDate} = req.body
   try {
     const deleteData = await prisma.caseagency.delete({
       where: {
-        complainID_caseagencyNum_agencyID: {
+        complainID_caseagnecyDate: {
             complainID: complainID,
-            caseagencyNum: caseagencyNum,
-            agencyID: agencyID
+            caseagnecyDate: caseagnecyDate
         }
       }
     });

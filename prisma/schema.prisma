@@ -34,16 +34,21 @@ model caseagency {
   complainID BigInt @db.UnsignedBigInt
   complain  complain? @relation(fields: [complainID], references: [complainID])
   caseagencyNum Int @db.UnsignedInt
-  agencyID  Int @db.UnsignedInt
-  agency  agency @relation("caseagency" ,fields: [agencyID], references: [agencyID])
+  complainerID  BigInt? @db.UnsignedBigInt
+  complainer complainer? @relation(fields: [complainerID], references: [complainerID])
+  agencyID  Int? @db.UnsignedInt
+  agency  agency? @relation("caseagency" ,fields: [agencyID], references: [agencyID])
+  userID  Int? @db.UnsignedInt
+  users users? @relation(fields: [userID], references: [userID])
   caseagencyStatus String @db.VarChar(20)
   caseagnecyDetail String? @db.Text
   casetoagencyID Int? @db.UnsignedInt
   toagency  agency? @relation("casetoagency" ,fields: [casetoagencyID], references: [agencyID])
   caseagnecyDate  DateTime @db.DateTime(0)
   caseagencyUpdate DateTime @db.DateTime(0)
+  caseagencyImages String? @db.Text
 
-  @@id([complainID, caseagencyNum, agencyID])
+  @@id([complainID, caseagnecyDate]) 
 }
 
 model complainer {
@@ -75,6 +80,7 @@ model complainer {
   complainerUpdated     DateTime? @db.DateTime(0)
   updatedUserID         Int?      @db.UnsignedInt
   complain              complain[]
+  caseagency            caseagency[]
 
   @@index([complainerID, complainerPhone, complainerEmail, complainerPassword])
 }
@@ -145,6 +151,8 @@ model users {
   userType     String  @db.VarChar(20)
   agencyID     Int?    @db.UnsignedInt
   agency       agency? @relation(fields: [agencyID], references: [agencyID])
+  caseagency   caseagency[]
+  
 
   @@index([agencyID], map: "users_agencyID_fkey")
 }

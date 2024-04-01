@@ -89,6 +89,53 @@ router.get('/complaintype/:complaintypeID', async (req, res)=> {
   }
 })
 
+router.get('/status/:complainStatus', async (req, res)=> {
+  var params = req.params
+  try{
+    var query = null;
+    if(params.complainStatus == 'ดำเนินการ') {
+      query = await prisma.complain.findMany({
+        include: {
+          complaintype: true,
+          caseagency: true,
+          agency: true,
+          complainer: true,
+        },
+        where: {
+          OR: [
+            {
+              complainStatus: 'รับเรื่อง'
+            },
+            {
+              complainStatus: 'กำลังดำเนินการ'
+            },
+            {
+              complainStatus: 'ส่งต่อหน่วยงาน'
+            }
+          ]
+        }
+      })
+    } else {
+      query = await prisma.complain.findMany({
+        include: {
+          complaintype: true,
+          caseagency: true,
+          agency: true,
+          complainer: true,
+        },
+        where: {
+          complainStatus: params.complainStatus
+        }
+      })
+    }
+    const json = JSON.stringify(query, replacer)
+    const decodedData = JSON.parse(json, reviver)
+    res.json(decodedData)
+  } catch(e) {
+    res.json({result: false})
+  }
+})
+
 router.post('/insert', urlencodedParser, async(req, res) => {
     const {complainTitle, complainDetail, complainDate, complainStatus, schoolID, complainerID, agencyID, complaintypeID, complainImages} = req.body
     let data: Prisma.complainCreateInput
