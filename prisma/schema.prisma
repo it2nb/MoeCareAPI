@@ -33,7 +33,6 @@ model complain {
 model caseagency {
   complainID BigInt @db.UnsignedBigInt
   complain  complain? @relation(fields: [complainID], references: [complainID])
-  caseagencyNum Int @db.UnsignedInt
   complainerID  BigInt? @db.UnsignedBigInt
   complainer complainer? @relation(fields: [complainerID], references: [complainerID])
   agencyID  Int? @db.UnsignedInt
@@ -44,11 +43,11 @@ model caseagency {
   caseagnecyDetail String? @db.Text
   casetoagencyID Int? @db.UnsignedInt
   toagency  agency? @relation("casetoagency" ,fields: [casetoagencyID], references: [agencyID])
-  caseagnecyDate  DateTime @db.DateTime(0)
+  caseagencyDate  DateTime @db.DateTime(0)
   caseagencyUpdate DateTime @db.DateTime(0)
   caseagencyImages String? @db.Text
 
-  @@id([complainID, caseagnecyDate]) 
+  @@id([complainID, caseagencyDate]) 
 }
 
 model complainer {

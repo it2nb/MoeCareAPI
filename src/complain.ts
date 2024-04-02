@@ -32,7 +32,17 @@ router.get('/', async (req, res)=> {
         const query = await prisma.complain.findMany({
           include: {
             complaintype: true,
-            caseagency: true,
+            caseagency: {
+              include: {
+                toagency: true,
+                users: true,
+                agency: true,
+                complainer: true
+              },
+              orderBy: {
+                caseagencyDate: 'desc'
+              }
+            },
             agency: true,
             complainer: true,
           }
@@ -51,7 +61,17 @@ router.get('/complainer/:complainerID', async (req, res)=> {
     const query = await prisma.complain.findMany({
       include: {
         complaintype: true,
-        caseagency: true,
+        caseagency: {
+          include: {
+            toagency: true,
+            users: true,
+            agency: true,
+            complainer: true
+          },
+          orderBy: {
+            caseagencyDate: 'desc'
+          }
+        },
         agency: true,
         complainer: true,
       },
@@ -73,7 +93,17 @@ router.get('/complaintype/:complaintypeID', async (req, res)=> {
     const query = await prisma.complain.findMany({
       include: {
         complaintype: true,
-        caseagency: true,
+        caseagency: {
+          include: {
+            toagency: true,
+            users: true,
+            agency: true,
+            complainer: true
+          },
+          orderBy: {
+            caseagencyDate: 'desc'
+          }
+        },
         agency: true,
         complainer: true,
       },
@@ -97,7 +127,17 @@ router.get('/status/:complainStatus', async (req, res)=> {
       query = await prisma.complain.findMany({
         include: {
           complaintype: true,
-          caseagency: true,
+          caseagency: {
+            include: {
+              toagency: true,
+              users: true,
+              agency: true,
+              complainer: true
+            },
+            orderBy: {
+              caseagencyDate: 'desc'
+            }
+          },
           agency: true,
           complainer: true,
         },
@@ -119,7 +159,17 @@ router.get('/status/:complainStatus', async (req, res)=> {
       query = await prisma.complain.findMany({
         include: {
           complaintype: true,
-          caseagency: true,
+          caseagency: {
+            include: {
+              toagency: true,
+              users: true,
+              agency: true,
+              complainer: true
+            },
+            orderBy: {
+              caseagencyDate: 'desc'
+            }
+          },
           agency: true,
           complainer: true,
         },

@@ -45,7 +45,7 @@ app.use((req, res, next)=>{
   
   jwt.verify(authHeader, process.env.TOKEN_SECRET as String, (err: any, user: any) => {
     if (err) return res.send(false)
-
+console.log('ok')
     next()
   })
 })

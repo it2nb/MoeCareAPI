@@ -66,50 +66,54 @@ router.get('/caseagency/:complainID/:', async (req, res)=> {
 })
 
 router.post('/insert', urlencodedParser, async(req, res) => {
-    const {complainID, caseagencyNum, agencyID, caseagencyStatus, caseagnecyDetail, casetoagencyID, caseagnecyDate, caseagencyUpdate} = req.body
+    const {complainID, complainerID, agencyID, userID, caseagencyStatus, caseagencyDetail, casetoagencyID, caseagencyDate, caseagencyUpdate, caseagencyImages} = req.body
     let data: Prisma.caseagencyCreateInput
     data = {
         complain: complainID,
-        caseagencyNum: caseagencyNum,
+        complainer: complainerID,
         agency: agencyID,
+        users: userID,
         caseagencyStatus: caseagencyStatus,
-        caseagnecyDetail: caseagnecyDetail,
+        caseagnecyDetail: caseagencyDetail,
         toagency: casetoagencyID,
-        caseagnecyDate: caseagnecyDate,
-        caseagencyUpdate: caseagencyUpdate
+        caseagencyDate: caseagencyDate,
+        caseagencyUpdate: caseagencyUpdate,
+        caseagencyImages: caseagencyImages
     }
 
     try{
-      //const insertData = await prisma.$executeRaw`INSERT Ignore Into complain(complainTitle, complainDetail, complainDate, complainStatus, schoolID, complainerID, agencyID, complaintypeID, complainImages) Values (${complainTitle}, ${complainDetail}, ${complainDate}, ${complainStatus}, ${schoolID}, ${complainerID}, ${agencyID}, ${complaintypeID}, ${complainImages})`;
-        const insertData = await prisma.caseagency.create({data: data});
-        const json = JSON.stringify(insertData, replacer);
-        const decodedData = JSON.parse(json, reviver);
-        res.json(decodedData)
+      const insertData = await prisma.$executeRaw`INSERT Ignore Into caseagency(complainID, complainerID, agencyID, userID, caseagencyStatus, caseagnecyDetail, casetoagencyID, caseagencyDate, caseagencyUpdate, caseagencyImages) Values (${complainID}, ${complainerID}, ${agencyID}, ${userID}, ${caseagencyStatus}, ${caseagencyDetail}, ${casetoagencyID}, ${caseagencyDate}, ${caseagencyUpdate}, ${caseagencyImages})`;
+      //const insertData = await prisma.caseagency.create({data: data});
+      const json = JSON.stringify(insertData, replacer);
+      const decodedData = JSON.parse(json, reviver);
+      res.json(decodedData)
     } catch(e) {
-        res.send(false)
+        res.send(req.body)
     }
 });
 
 router.post('/update', urlencodedParser, async (req, res)=> {
-    const {complainID, caseagencyNum, agencyID, caseagencyStatus, caseagnecyDetail, casetoagencyID, caseagnecyDate, caseagencyUpdate} = req.body
+    const {complainID, complainerID, agencyID, userID, caseagencyStatus, caseagencyDetail, casetoagencyID, caseagencyDate, caseagencyUpdate, caseagencyImages} = req.body
     let data: Prisma.caseagencyCreateInput
     data = {
         complain: complainID,
-        caseagencyNum: caseagencyNum,
+        complainer: complainerID,
         agency: agencyID,
+        users: userID,
         caseagencyStatus: caseagencyStatus,
-        caseagnecyDetail: caseagnecyDetail,
+        caseagnecyDetail: caseagencyDetail,
         toagency: casetoagencyID,
-        caseagnecyDate: caseagnecyDate,
-        caseagencyUpdate: caseagencyUpdate
+        caseagencyDate: caseagencyDate,
+        caseagencyUpdate: caseagencyUpdate,
+        caseagencyImages: caseagencyImages
     }
     
     try {
       const updateData = await prisma.caseagency.update({
         where: {
-            complainID_caseagnecyDate: {
+            complainID_caseagencyDate: {
                 complainID: complainID,
-                caseagnecyDate: caseagnecyDate
+                caseagencyDate: caseagencyDate
             }
         },
         data: data
@@ -124,13 +128,13 @@ router.post('/update', urlencodedParser, async (req, res)=> {
 })
 
 router.post('/delete', urlencodedParser, async (req, res)=> {
-  const {complainID, caseagnecyDate} = req.body
+  const {complainID, caseagencyDate} = req.body
   try {
     const deleteData = await prisma.caseagency.delete({
       where: {
-        complainID_caseagnecyDate: {
+        complainID_caseagencyDate: {
             complainID: complainID,
-            caseagnecyDate: caseagnecyDate
+            caseagencyDate: caseagencyDate
         }
       }
     });
