@@ -151,6 +151,9 @@ router.get('/status/:complainStatus', async (req, res)=> {
             },
             {
               complainStatus: 'ส่งต่อหน่วยงาน'
+            },
+            {
+              complainStatus: 'ข้อมูลเพิ่มเติม'
             }
           ]
         }

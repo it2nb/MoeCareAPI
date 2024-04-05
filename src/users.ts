@@ -31,6 +31,25 @@ router.get('/', (req, res)=> {
     res.send("Hello")
 })
 
+router.get('/:userID', async(req, res) => {
+  var params = req.params
+  try{
+    const query = await prisma.users.findUnique({
+      include: {
+        agency: true
+      },
+      where: {
+        userID: parseInt(params.userID)
+      }
+    })
+    const json = JSON.stringify(query, replacer)
+    const decodedData = JSON.parse(json, reviver)
+    res.json(decodedData)
+  } catch(e) {
+    res.json({result: false})
+  }
+})
+
 router.post('/login', urlencodedParser, async(req, res) => {
     const {username, password} = req.body
     try{
@@ -44,6 +63,18 @@ router.post('/login', urlencodedParser, async(req, res) => {
     } catch(e) {
       res.json(false)
     }
+})
+
+router.post('/update', urlencodedParser, async (req, res)=>{
+  const {userID, userName, userPassword, userStatus, userType, agencyID} = req.body
+  try {
+    const query = await prisma.$queryRaw`UPDATE users SET userName=${userName}, userStatus=${userStatus}, userType=${userType}, agencyID=${agencyID} Where userID=${userID}`
+    const json = JSON.stringify(query, replacer)
+    const decodedData = JSON.parse(json, reviver)
+    res.json(decodedData)
+  } catch(e) {
+    res.send(false)
+  }
 })
 
 router.get("/:universalURL", (req, res) => { 
