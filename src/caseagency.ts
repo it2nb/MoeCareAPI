@@ -66,7 +66,7 @@ router.get('/caseagency/:complainID/:', async (req, res)=> {
 })
 
 router.post('/insert', urlencodedParser, async(req, res) => {
-    const {complainID, complainerID, agencyID, userID, caseagencyStatus, caseagencyDetail, casetoagencyID, caseagencyDate, caseagencyUpdate, caseagencyImages} = req.body
+    const {complainID, complainerID, agencyID, userID, caseagencyStatus, caseagencyDetail, casetoagencyID, caseagencyDate, caseagencyUpdate, caseagencyImages, caseagencyPdf} = req.body
     let data: Prisma.caseagencyCreateInput
     data = {
         complain: complainID,
@@ -78,11 +78,12 @@ router.post('/insert', urlencodedParser, async(req, res) => {
         toagency: casetoagencyID,
         caseagencyDate: caseagencyDate,
         caseagencyUpdate: caseagencyUpdate,
-        caseagencyImages: caseagencyImages
+        caseagencyImages: caseagencyImages,
+        caseagencyPdf: caseagencyPdf
     }
 
     try{
-      const insertData = await prisma.$executeRaw`INSERT Ignore Into caseagency(complainID, complainerID, agencyID, userID, caseagencyStatus, caseagnecyDetail, casetoagencyID, caseagencyDate, caseagencyUpdate, caseagencyImages) Values (${complainID}, ${complainerID}, ${agencyID}, ${userID}, ${caseagencyStatus}, ${caseagencyDetail}, ${casetoagencyID}, ${caseagencyDate}, ${caseagencyUpdate}, ${caseagencyImages})`;
+      const insertData = await prisma.$executeRaw`INSERT Ignore Into caseagency(complainID, complainerID, agencyID, userID, caseagencyStatus, caseagnecyDetail, casetoagencyID, caseagencyDate, caseagencyUpdate, caseagencyImages, caseagencyPdf) Values (${complainID}, ${complainerID}, ${agencyID}, ${userID}, ${caseagencyStatus}, ${caseagencyDetail}, ${casetoagencyID}, ${caseagencyDate}, ${caseagencyUpdate}, ${caseagencyImages}, ${caseagencyPdf})`;
       //const insertData = await prisma.caseagency.create({data: data});
       const json = JSON.stringify(insertData, replacer);
       const decodedData = JSON.parse(json, reviver);
@@ -93,7 +94,7 @@ router.post('/insert', urlencodedParser, async(req, res) => {
 });
 
 router.post('/update', urlencodedParser, async (req, res)=> {
-    const {complainID, complainerID, agencyID, userID, caseagencyStatus, caseagencyDetail, casetoagencyID, caseagencyDate, caseagencyUpdate, caseagencyImages} = req.body
+    const {complainID, complainerID, agencyID, userID, caseagencyStatus, caseagencyDetail, casetoagencyID, caseagencyDate, caseagencyUpdate, caseagencyImages, caseagencyPdf} = req.body
     let data: Prisma.caseagencyCreateInput
     data = {
         complain: complainID,
@@ -105,7 +106,8 @@ router.post('/update', urlencodedParser, async (req, res)=> {
         toagency: casetoagencyID,
         caseagencyDate: caseagencyDate,
         caseagencyUpdate: caseagencyUpdate,
-        caseagencyImages: caseagencyImages
+        caseagencyImages: caseagencyImages,
+        caseagencyPdf: caseagencyPdf
     }
     
     try {

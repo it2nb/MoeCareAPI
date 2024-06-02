@@ -27,6 +27,7 @@ model complain {
   complainerID  BigInt @db.UnsignedBigInt
   complainer complainer @relation(fields: [complainerID], references: [complainerID])
   complainImages String? @db.Text
+  complainPdf String? @db.Text
   caseagency  caseagency[]
 }
 
@@ -46,6 +47,7 @@ model caseagency {
   caseagencyDate  DateTime @db.DateTime(0)
   caseagencyUpdate DateTime @db.DateTime(0)
   caseagencyImages String? @db.Text
+  caseagencyPdf String? @db.Text
 
   @@id([complainID, caseagencyDate]) 
 }

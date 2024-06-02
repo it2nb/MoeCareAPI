@@ -190,7 +190,7 @@ router.get('/status/:complainStatus', async (req, res)=> {
 })
 
 router.post('/insert', urlencodedParser, async(req, res) => {
-    const {complainTitle, complainDetail, complainDate, complainStatus, schoolID, complainerID, agencyID, complaintypeID, complainImages} = req.body
+    const {complainTitle, complainDetail, complainDate, complainStatus, schoolID, complainerID, agencyID, complaintypeID, complainImages, complainPdf} = req.body
     let data: Prisma.complainCreateInput
     data = {
         complainTitle: complainTitle,
@@ -201,11 +201,12 @@ router.post('/insert', urlencodedParser, async(req, res) => {
         complainer: complainerID,
         agency: agencyID,
         complaintype: complaintypeID,
-        complainImages: complainImages
+        complainImages: complainImages,
+        complainPdf: complainPdf,
     }
 
     try{
-      const insertData = await prisma.$executeRaw`INSERT Ignore Into complain(complainTitle, complainDetail, complainDate, complainStatus, schoolID, complainerID, agencyID, complaintypeID, complainImages) Values (${complainTitle}, ${complainDetail}, ${complainDate}, ${complainStatus}, ${schoolID}, ${complainerID}, ${agencyID}, ${complaintypeID}, ${complainImages})`;
+      const insertData = await prisma.$executeRaw`INSERT Ignore Into complain(complainTitle, complainDetail, complainDate, complainStatus, schoolID, complainerID, agencyID, complaintypeID, complainImages, complainPdf) Values (${complainTitle}, ${complainDetail}, ${complainDate}, ${complainStatus}, ${schoolID}, ${complainerID}, ${agencyID}, ${complaintypeID}, ${complainImages}, ${complainPdf})`;
         // const insertData = await prisma.complain.create({data: data});
         const json = JSON.stringify(insertData, replacer);
         const decodedData = JSON.parse(json, reviver);
@@ -216,7 +217,7 @@ router.post('/insert', urlencodedParser, async(req, res) => {
 });
 
 router.post('/update', urlencodedParser, async (req, res)=> {
-  const {complainID, complainTitle, complainDetail, complainDate, complainStatus, schoolID, complainerID, agencyID, complaintypeID, complainImages} = req.body
+  const {complainID, complainTitle, complainDetail, complainDate, complainStatus, schoolID, complainerID, agencyID, complaintypeID, complainImages, complainPdf} = req.body
     let data: Prisma.complainCreateInput
     data = {
         complainTitle: complainTitle,
@@ -227,7 +228,8 @@ router.post('/update', urlencodedParser, async (req, res)=> {
         complainer: complainerID,
         agency: agencyID,
         complaintype: complaintypeID,
-        complainImages: complainImages
+        complainImages: complainImages,
+        complainPdf: complainPdf
     }
     
     try {
@@ -237,7 +239,7 @@ router.post('/update', urlencodedParser, async (req, res)=> {
       //   },
       //   data: data
       // });
-      const updateData = await prisma.$executeRaw`UPDATE complain Set complainTitle=${complainTitle}, complainDetail=${complainDetail}, complainDate=${complainDate}, complainStatus=${complainStatus}, schoolID=${schoolID}, complainerID=${complainerID}, agencyID=${agencyID}, complaintypeID=${complaintypeID}, complainImages=${complainImages} Where complainID=${complainID}`;
+      const updateData = await prisma.$executeRaw`UPDATE complain Set complainTitle=${complainTitle}, complainDetail=${complainDetail}, complainDate=${complainDate}, complainStatus=${complainStatus}, schoolID=${schoolID}, complainerID=${complainerID}, agencyID=${agencyID}, complaintypeID=${complaintypeID}, complainImages=${complainImages}, complainPdf=${complainPdf} Where complainID=${complainID}`;
       const json = JSON.stringify(updateData, replacer);
       const decodedData = JSON.parse(json, reviver);
       res.json(decodedData)
