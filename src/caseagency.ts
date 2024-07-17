@@ -44,7 +44,7 @@ router.get('/', async (req, res)=> {
     }
 })
 
-router.get('/caseagency/:complainID/:', async (req, res)=> {
+router.get('/caseagency/:complainID', async (req, res)=> {
   var params = req.params
   try{
     const query = await prisma.caseagency.findMany({
@@ -64,6 +64,66 @@ router.get('/caseagency/:complainID/:', async (req, res)=> {
     res.json({result: false})
   }
 })
+
+router.get('/casetoagency/:agencyID', async (req, res)=> {
+  var params = req.params
+  try{
+    const query = await prisma.caseagency.findMany({
+      include: {
+        complain: {
+          include: {
+            complaintype: true,
+            caseagency: {
+              include: {
+                toagency: true,
+                users: true,
+                agency: true,
+                complainer: true
+              },
+              orderBy: {
+                caseagencyDate: 'desc'
+              }
+            },
+            agency: true,
+            complainer: true,
+          }
+        },
+        agency: true,
+        toagency: true,
+      },
+      where: {
+        casetoagencyID: parseInt(params.agencyID)
+      },
+      distinct: ['complainID'],
+    })
+    const json = JSON.stringify(query, replacer)
+    const decodedData = JSON.parse(json, reviver)
+    res.json(decodedData)
+  } catch(e) {
+    res.json({result: false})
+  }
+})
+
+// router.get('/casetoagency/:agencyID/:caseagencyStatus?', async (req, res)=> {
+//   var params = req.params
+//   try{
+//     const query = await prisma.caseagency.findMany({
+//       include: {
+//         complain: true,
+//         agency: true,
+//         toagency: true,
+//       },
+//       where: {
+//         casetoagencyID: parseInt(params.agencyID)
+//       }
+//     })
+//     const json = JSON.stringify(query, replacer)
+//     const decodedData = JSON.parse(json, reviver)
+//     res.json(decodedData)
+//   } catch(e) {
+//     res.json({result: false})
+//   }
+// })
 
 router.post('/insert', urlencodedParser, async(req, res) => {
     const {complainID, complainerID, agencyID, userID, caseagencyStatus, caseagencyDetail, casetoagencyID, caseagencyDate, caseagencyUpdate, caseagencyImages, caseagencyPdf} = req.body
