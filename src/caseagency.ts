@@ -125,6 +125,48 @@ router.get('/casetoagency/:agencyID', async (req, res)=> {
 //   }
 // })
 
+router.get('/countcomplain/casetoagency/:agencyID', async (req, res)=>{
+  try{
+    // const query = await prisma.complain.aggregate({
+    //   _count: {
+    //     complainID: true
+    //   }
+    // })
+    var params = req.params
+    const query = await prisma.$queryRaw`SELECT sendcase.allQty as allQty, newcase.newQty as newQty, completecase.completeQty as completeQty From caseagency
+    Left Join (
+      SELECT count(distinct complainID) as allQty, casetoagencyID From caseagency 
+      Where casetoagencyID=${parseInt(params.agencyID)}
+    ) as sendcase On caseagency.casetoagencyID=sendcase.casetoagencyID
+    Left Join (
+      SELECT sum(if(newCase>ifnull(lastCase, 0), 1, 0)) as newQty, casetoagencyID From (
+        SELECT max(caseagency.caseagencyUpdate) as newCase, max(lastCase.caseagencyUpdate) as lastCase, casetoagencyID From caseagency 
+        Left Join (
+          SELECT caseagencyUpdate, agencyID, complainID From caseagency 
+          Where agencyID=${parseInt(params.agencyID)}
+        ) as lastCase On caseagency.complainID=lastCase.complainID  and caseagency.casetoagencyID=lastCase.agencyID
+      Where casetoagencyID=${parseInt(params.agencyID)} Group By caseagency.complainID) as nCase
+    ) as newcase On caseagency.casetoagencyID=newcase.casetoagencyID
+    Left Join (
+      SELECT sum(if(newCase<ifnull(lastCase, 0), 1, 0)) as completeQty, casetoagencyID From (
+        SELECT max(caseagency.caseagencyUpdate) as newCase, max(lastCase.caseagencyUpdate) as lastCase, casetoagencyID From caseagency 
+        Left Join (
+          SELECT caseagencyUpdate, agencyID, complainID From caseagency 
+          Where caseagencyStatus="รายงานผล" and agencyID=${parseInt(params.agencyID)}
+        ) as lastCase On caseagency.complainID=lastCase.complainID  and caseagency.casetoagencyID=lastCase.agencyID
+      Where casetoagencyID=${parseInt(params.agencyID)} Group By caseagency.complainID) as cCase
+    ) as completecase On caseagency.casetoagencyID=completecase.casetoagencyID
+    Where caseagency.casetoagencyID=${parseInt(params.agencyID)}
+    Group By caseagency.casetoagencyID`;
+    const json = JSON.stringify(query, replacer);
+    const decodedData = JSON.parse(json, reviver);
+    res.json(decodedData)
+  } catch(e) {
+    res.send(false)
+  }
+
+})
+
 router.post('/insert', urlencodedParser, async(req, res) => {
     const {complainID, complainerID, agencyID, userID, caseagencyStatus, caseagencyDetail, casetoagencyID, caseagencyDate, caseagencyUpdate, caseagencyImages, caseagencyPdf} = req.body
     let data: Prisma.caseagencyCreateInput
