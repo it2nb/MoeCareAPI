@@ -96,7 +96,54 @@ router.get('/casetoagency/:agencyID', async (req, res)=> {
       },
       distinct: ['complainID'],
     })
-    const json = JSON.stringify(query, replacer)
+    let data = Array();
+    query.forEach((result, index) => {
+      data.push(result['complain']);
+    })
+    const json = JSON.stringify(data, replacer)
+    const decodedData = JSON.parse(json, reviver)
+    res.json(decodedData)
+  } catch(e) {
+    res.json({result: false})
+  }
+})
+
+router.get('/casetoagency/:agencyID/new', async (req, res)=> {
+  var params = req.params
+  try{
+    const query = await prisma.caseagency.findMany({
+      include: {
+        complain: {
+          include: {
+            complaintype: true,
+            caseagency: {
+              include: {
+                toagency: true,
+                users: true,
+                agency: true,
+                complainer: true
+              },
+              orderBy: {
+                caseagencyDate: 'desc'
+              }
+            },
+            agency: true,
+            complainer: true,
+          },
+        },
+        agency: true,
+        toagency: true,
+      },
+      where: {
+        casetoagencyID: parseInt(params.agencyID)
+      },
+      distinct: ['complainID'],
+    })
+    let data = Array();
+    query.forEach((result, index) => {
+      data.push(result['complain']);
+    })
+    const json = JSON.stringify(data, replacer)
     const decodedData = JSON.parse(json, reviver)
     res.json(decodedData)
   } catch(e) {
@@ -166,6 +213,7 @@ router.get('/countcomplain/casetoagency/:agencyID', async (req, res)=>{
   }
 
 })
+
 
 router.post('/insert', urlencodedParser, async(req, res) => {
     const {complainID, complainerID, agencyID, userID, caseagencyStatus, caseagencyDetail, casetoagencyID, caseagencyDate, caseagencyUpdate, caseagencyImages, caseagencyPdf} = req.body
