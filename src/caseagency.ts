@@ -111,38 +111,77 @@ router.get('/casetoagency/:agencyID', async (req, res)=> {
 router.get('/casetoagency/:agencyID/new', async (req, res)=> {
   var params = req.params
   try{
-    const query = await prisma.caseagency.findMany({
-      include: {
-        complain: {
-          include: {
-            complaintype: true,
-            caseagency: {
-              include: {
-                toagency: true,
-                users: true,
-                agency: true,
-                complainer: true
-              },
-              orderBy: {
-                caseagencyDate: 'desc'
-              }
-            },
-            agency: true,
-            complainer: true,
-          },
-        },
-        agency: true,
-        toagency: true,
-      },
-      where: {
-        casetoagencyID: parseInt(params.agencyID)
-      },
-      distinct: ['complainID'],
-    })
+    // const query = await prisma.caseagency.findMany({
+    //   include: {
+    //     complain: {
+    //       include: {
+    //         complaintype: true,
+    //         caseagency: {
+    //           include: {
+    //             toagency: true,
+    //             users: true,
+    //             agency: true,
+    //             complainer: true
+    //           },
+    //           orderBy: {
+    //             caseagencyDate: 'desc'
+    //           }
+    //         },
+    //         agency: true,
+    //         complainer: true,
+    //       },
+    //     },
+    //     agency: true,
+    //     toagency: true,
+    //   },
+    //   where: {
+    //     casetoagencyID: parseInt(params.agencyID)
+    //   },
+    //   distinct: ['complainID'],
+    // })
+    // let data = Array();
+    // query.forEach((result, index) => {
+    //   data.push(result['complain']);
+    // })
+    let query = Array();
+    query = await prisma.$queryRaw`
+      SELECT * From (
+        SELECT max(caseagency.caseagencyUpdate) as newCaseTime, ifnull(max(lastCase.caseagencyUpdate), 0) as lastCaseTime, casetoagencyID, complain.* From caseagency 
+        Left Join (
+          SELECT caseagencyUpdate, agencyID, complainID From caseagency 
+          Where agencyID=${parseInt(params.agencyID)}
+        ) as lastCase On caseagency.complainID=lastCase.complainID  and caseagency.casetoagencyID=lastCase.agencyID
+        Left Join complain On caseagency.complainID=complain.complainID
+        Where casetoagencyID=${parseInt(params.agencyID)} 
+        Group By caseagency.complainID ) as tb
+      Where newCaseTime>lastCaseTime
+    `;
     let data = Array();
-    query.forEach((result, index) => {
-      data.push(result['complain']);
+    let pmap = query.map(async (complain)=> {
+      const cpdata = await prisma.complain.findUnique({
+        include: {
+          complaintype: true,
+          caseagency: {
+            include: {
+              toagency: true,
+              users: true,
+              agency: true,
+              complainer: true
+            },
+            orderBy: {
+              caseagencyDate: 'desc'
+            }
+          },
+          agency: true,
+          complainer: true,
+        },
+        where: {
+          complainID: complain.complainID
+        }
+      })
+      data.push(cpdata);
     })
+    await Promise.all(pmap);
     const json = JSON.stringify(data, replacer)
     const decodedData = JSON.parse(json, reviver)
     res.json(decodedData)
@@ -186,22 +225,24 @@ router.get('/countcomplain/casetoagency/:agencyID', async (req, res)=>{
       Where casetoagencyID=${parseInt(params.agencyID)}
     ) as sendcase On caseagency.casetoagencyID=sendcase.casetoagencyID
     Left Join (
-      SELECT sum(if(newCase>ifnull(lastCase, 0), 1, 0)) as newQty, casetoagencyID From (
-        SELECT max(caseagency.caseagencyUpdate) as newCase, max(lastCase.caseagencyUpdate) as lastCase, casetoagencyID From caseagency 
+      SELECT sum(if(newCase>ifnull(lastCase, 0) and complainStatus!="เสร็จสิ้น", 1, 0)) as newQty, casetoagencyID From (
+        SELECT max(caseagency.caseagencyUpdate) as newCase, max(lastCase.caseagencyUpdate) as lastCase, casetoagencyID, caseagency.complainID From caseagency 
         Left Join (
           SELECT caseagencyUpdate, agencyID, complainID From caseagency 
           Where agencyID=${parseInt(params.agencyID)}
         ) as lastCase On caseagency.complainID=lastCase.complainID  and caseagency.casetoagencyID=lastCase.agencyID
       Where casetoagencyID=${parseInt(params.agencyID)} Group By caseagency.complainID) as nCase
+      Left Join complain On nCase.complainID=complain.complainID
     ) as newcase On caseagency.casetoagencyID=newcase.casetoagencyID
     Left Join (
-      SELECT sum(if(newCase<ifnull(lastCase, 0), 1, 0)) as completeQty, casetoagencyID From (
-        SELECT max(caseagency.caseagencyUpdate) as newCase, max(lastCase.caseagencyUpdate) as lastCase, casetoagencyID From caseagency 
+      SELECT sum(if(newCase<ifnull(lastCase, 0) or complainStatus="เสร็จสิ้น", 1, 0)) as completeQty, casetoagencyID From (
+        SELECT max(caseagency.caseagencyUpdate) as newCase, max(lastCase.caseagencyUpdate) as lastCase, casetoagencyID, caseagency.complainID From caseagency 
         Left Join (
           SELECT caseagencyUpdate, agencyID, complainID From caseagency 
           Where caseagencyStatus="รายงานผล" and agencyID=${parseInt(params.agencyID)}
         ) as lastCase On caseagency.complainID=lastCase.complainID  and caseagency.casetoagencyID=lastCase.agencyID
       Where casetoagencyID=${parseInt(params.agencyID)} Group By caseagency.complainID) as cCase
+      Left Join complain On cCase.complainID=complain.complainID
     ) as completecase On caseagency.casetoagencyID=completecase.casetoagencyID
     Where caseagency.casetoagencyID=${parseInt(params.agencyID)}
     Group By caseagency.casetoagencyID`;
