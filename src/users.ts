@@ -53,13 +53,17 @@ router.get('/:userID', async(req, res) => {
 router.post('/login', urlencodedParser, async(req, res) => {
     const {username, password} = req.body
     try{
-      const query = await prisma.$queryRaw`
+      let query = Array();
+      query = await prisma.$queryRaw`
         SELECT * FROM users Where userName=${username} and userPassword=md5(${password})
       `
-      const json = JSON.stringify(query, replacer);
-      const decodedData = JSON.parse(json, reviver);
-
-      res.json(decodedData)
+      if(query.length > 0) {
+        const json = JSON.stringify(query, replacer);
+        const decodedData = JSON.parse(json, reviver);
+        res.json(decodedData) 
+      } else {
+        res.json(false)
+      }
     } catch(e) {
       res.json(false)
     }

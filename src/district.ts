@@ -30,9 +30,13 @@ router.use(express.json())
 router.get('/', async (req, res)=> {
     try {
         const query = await prisma.district.findMany();
-        const json = JSON.stringify(query, replacer);
-        const decodedData = JSON.parse(json, reviver);
-        res.json(query)
+        if(query.length > 0) {
+            const json = JSON.stringify(query, replacer);
+            const decodedData = JSON.parse(json, reviver);
+            res.json(decodedData) 
+          } else {
+            res.json(false)
+          }
     } catch(e) {
         res.json(false)
     }
@@ -46,9 +50,13 @@ router.get('/:districtID', async (req, res)=> {
                 districtID: parseInt(param.districtID)
             }
         });
-        const json = JSON.stringify(query, replacer);
-        const decodedData = JSON.parse(json, reviver);
-        res.json(query)
+        if(query.length > 0) {
+            const json = JSON.stringify(query, replacer);
+            const decodedData = JSON.parse(json, reviver);
+            res.json(decodedData) 
+          } else {
+            res.json(false)
+          }
     } catch(e) {
         res.json(false)
     }
@@ -62,9 +70,13 @@ router.get('/province/:provinceID', async (req, res)=> {
                 provinceID: parseInt(param.provinceID)
             }
         });
-        const json = JSON.stringify(query, replacer);
-        const decodedData = JSON.parse(json, reviver);
-        res.json(query)
+        if(query.length > 0) {
+            const json = JSON.stringify(query, replacer);
+            const decodedData = JSON.parse(json, reviver);
+            res.json(decodedData) 
+          } else {
+            res.json(false)
+          }
     } catch(e) {
         res.json(false)
     }

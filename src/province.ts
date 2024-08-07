@@ -30,12 +30,36 @@ router.use(express.json())
 router.get('/', async (req, res)=> {
     try {
         const query = await prisma.province.findMany();
-        const json = JSON.stringify(query, replacer);
-        const decodedData = JSON.parse(json, reviver);
-        res.json(query)
+        if(query.length > 0) {
+          const json = JSON.stringify(query, replacer);
+          const decodedData = JSON.parse(json, reviver);
+          res.json(decodedData) 
+        } else {
+          res.json(false)
+        }
     } catch(e) {
         res.json(false)
     }
+})
+
+router.get('/:provinceID', async (req, res)=> {
+  var param = req.params
+  try {
+      const query = await prisma.province.findMany({
+          where: {
+            provinceID: parseInt(param.provinceID)
+          }
+      });
+      if(query.length > 0) {
+        const json = JSON.stringify(query, replacer);
+        const decodedData = JSON.parse(json, reviver);
+        res.json(decodedData) 
+      } else {
+        res.json(false)
+      }
+  } catch(e) {
+      res.json(false)
+  }
 })
 
 router.get("/:universalURL", (req, res) => { 

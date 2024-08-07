@@ -181,9 +181,13 @@ router.get('/status/:complainStatus', async (req, res)=> {
         }
       })
     }
-    const json = JSON.stringify(query, replacer)
-    const decodedData = JSON.parse(json, reviver)
-    res.json(decodedData)
+    if(query.length > 0) {
+      const json = JSON.stringify(query, replacer);
+      const decodedData = JSON.parse(json, reviver);
+      res.json(decodedData) 
+    } else {
+      res.json(false)
+    }
   } catch(e) {
     res.json({result: false})
   }
@@ -272,10 +276,15 @@ router.get('/count', async (req, res)=>{
     //     complainID: true
     //   }
     // })
-    const query = await prisma.$queryRaw`SELECT count(complainID) as allQty, sum(if(complainStatus="แจ้งเรื่อง", 1, 0)) as newQty, sum(if(complainStatus="เสร็จสิ้น", 1, 0)) as completeQty From complain`;
-    const json = JSON.stringify(query, replacer);
-    const decodedData = JSON.parse(json, reviver);
-    res.json(decodedData)
+    let query = Array();
+    query = await prisma.$queryRaw`SELECT count(complainID) as allQty, sum(if(complainStatus="แจ้งเรื่อง", 1, 0)) as newQty, sum(if(complainStatus="เสร็จสิ้น", 1, 0)) as completeQty From complain`;
+    if(query.length > 0) {
+      const json = JSON.stringify(query, replacer);
+      const decodedData = JSON.parse(json, reviver);
+      res.json(decodedData) 
+    } else {
+      res.json(false)
+    }
   } catch(e) {
     res.send(false)
   }
@@ -289,10 +298,15 @@ router.get('/count/agency/:agencyID', async (req, res)=>{
     //     complainID: true
     //   }
     // })
-    const query = await prisma.$queryRaw`SELECT count(complainID) as allQty, sum(if(complainStatus="แจ้งเรื่อง", 1, 0)) as newQty, sum(if(complainStatus="เสร็จสิ้น", 1, 0)) as completeQty From complain`;
-    const json = JSON.stringify(query, replacer);
-    const decodedData = JSON.parse(json, reviver);
-    res.json(decodedData)
+    let query = Array();
+    query = await prisma.$queryRaw`SELECT count(complainID) as allQty, sum(if(complainStatus="แจ้งเรื่อง", 1, 0)) as newQty, sum(if(complainStatus="เสร็จสิ้น", 1, 0)) as completeQty From complain`;
+    if(query.length > 0) {
+      const json = JSON.stringify(query, replacer);
+      const decodedData = JSON.parse(json, reviver);
+      res.json(decodedData) 
+    } else {
+      res.json(false)
+    }
   } catch(e) {
     res.send(false)
   }

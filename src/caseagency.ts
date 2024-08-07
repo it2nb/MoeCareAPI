@@ -36,9 +36,13 @@ router.get('/', async (req, res)=> {
             toagency: true,
           }
         });
-        const json = JSON.stringify(query, replacer);
-        const decodedData = JSON.parse(json, reviver);
-        res.json(decodedData)
+        if(query.length > 0) {
+          const json = JSON.stringify(query, replacer);
+          const decodedData = JSON.parse(json, reviver);
+          res.json(decodedData) 
+        } else {
+          res.json(false)
+        }
     } catch(e) {
         res.json(e)
     }
@@ -57,9 +61,13 @@ router.get('/caseagency/:complainID', async (req, res)=> {
         complainID: parseInt(params.complainID)
       }
     })
-    const json = JSON.stringify(query, replacer)
-    const decodedData = JSON.parse(json, reviver)
-    res.json(decodedData)
+    if(query.length > 0) {
+      const json = JSON.stringify(query, replacer);
+      const decodedData = JSON.parse(json, reviver);
+      res.json(decodedData) 
+    } else {
+      res.json(false)
+    }
   } catch(e) {
     res.json({result: false})
   }
@@ -100,9 +108,13 @@ router.get('/casetoagency/:agencyID', async (req, res)=> {
     query.forEach((result, index) => {
       data.push(result['complain']);
     })
-    const json = JSON.stringify(data, replacer)
-    const decodedData = JSON.parse(json, reviver)
-    res.json(decodedData)
+    if(data.length > 0) {
+      const json = JSON.stringify(data, replacer);
+      const decodedData = JSON.parse(json, reviver);
+      res.json(decodedData) 
+    } else {
+      res.json(false)
+    }
   } catch(e) {
     res.json({result: false})
   }
@@ -178,9 +190,13 @@ router.get('/casetoagency/:agencyID/:caseStatus', async (req, res)=> {
       data.push(cpdata);
     })
     await Promise.all(pmap);
-    const json = JSON.stringify(data, replacer)
-    const decodedData = JSON.parse(json, reviver)
-    res.json(decodedData)
+    if(data.length > 0) {
+      const json = JSON.stringify(data, replacer);
+      const decodedData = JSON.parse(json, reviver);
+      res.json(decodedData) 
+    } else {
+      res.json(false)
+    }
   } catch(e) {
     res.json({result: false})
   }
@@ -244,7 +260,7 @@ router.get('/countcomplain/casetoagency/:agencyID', async (req, res)=>{
     Group By caseagency.casetoagencyID`;
     const json = JSON.stringify(query, replacer);
     const decodedData = JSON.parse(json, reviver);
-    res.json(decodedData)
+    res.json(decodedData) 
   } catch(e) {
     res.send(false)
   }
