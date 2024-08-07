@@ -150,6 +150,10 @@ model users {
   userPassword String  @db.VarChar(50)
   userStatus   String  @db.VarChar(20)
   userType     String  @db.VarChar(20)
+  userFirstName String?  @db.VarChar(50)
+  userLastName  String? @db.VarChar(50)
+  userPhone String? @db.VarChar(20)
+  userEmail String? @db.VarChar(50)
   agencyID     Int?    @db.UnsignedInt
   agency       agency? @relation(fields: [agencyID], references: [agencyID])
   caseagency   caseagency[]
