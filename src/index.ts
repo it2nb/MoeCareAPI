@@ -82,6 +82,7 @@ app.get("/:universalURL", (req, res) => {
 }); 
 
 app.post('/upload/evidence', evidenceUpload.single('evidenceFile'), async function(req, res) {
+  console.log(req)
   try {
     res.json({
       result: true,
