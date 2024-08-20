@@ -56,6 +56,19 @@ router.get('/countcomplain', async (req, res) => {
   }
 })
 
+router.post('/insert', urlencodedParser, async(req, res) => {
+  const {complaintypeName} = req.body
+
+  try{
+    const insertData = await prisma.$executeRaw`INSERT Ignore Into complaintype(complaintypeName) Values (${complaintypeName})`;
+      const json = JSON.stringify(insertData, replacer);
+      const decodedData = JSON.parse(json, reviver);
+      res.json(decodedData)
+  } catch(e) {
+      res.send(false)
+  }
+});
+
 router.get("/:universalURL", (req, res) => { 
   res.send("404 URL NOT FOUND"); 
 }); 

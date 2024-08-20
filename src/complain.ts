@@ -55,6 +55,38 @@ router.get('/', async (req, res)=> {
     }
 })
 
+router.get('/:complainID', async (req, res)=> {
+  var params = req.params
+  try{
+    const query = await prisma.complain.findUnique({
+      include: {
+        complaintype: true,
+        caseagency: {
+          include: {
+            toagency: true,
+            users: true,
+            agency: true,
+            complainer: true
+          },
+          orderBy: {
+            caseagencyDate: 'desc'
+          }
+        },
+        agency: true,
+        complainer: true,
+      },
+      where: {
+        complainID: parseInt(params.complainID)
+      }
+    })
+    const json = JSON.stringify(query, replacer)
+    const decodedData = JSON.parse(json, reviver)
+    res.json(decodedData)
+  } catch(e) {
+    res.json({result: false})
+  }
+})
+
 router.get('/complainer/:complainerID', async (req, res)=> {
   var params = req.params
   try{
@@ -243,7 +275,8 @@ router.post('/update', urlencodedParser, async (req, res)=> {
       //   },
       //   data: data
       // });
-      const updateData = await prisma.$executeRaw`UPDATE complain Set complainTitle=${complainTitle}, complainDetail=${complainDetail}, complainDate=${complainDate}, complainStatus=${complainStatus}, schoolID=${schoolID}, complainerID=${complainerID}, agencyID=${agencyID}, complaintypeID=${complaintypeID}, complainImages=${complainImages}, complainPdf=${complainPdf} Where complainID=${complainID}`;
+      let SqlcomplainDate = new Date(complainDate).toISOString().slice(0, 19).replace('T', ' ')
+      const updateData = await prisma.$executeRaw`UPDATE complain Set complainTitle=${complainTitle}, complainDetail=${complainDetail}, complainDate=${SqlcomplainDate}, complainStatus=${complainStatus}, schoolID=${schoolID}, complainerID=${complainerID}, agencyID=${agencyID}, complaintypeID=${complaintypeID}, complainImages=${complainImages}, complainPdf=${complainPdf} Where complainID=${complainID}`;
       const json = JSON.stringify(updateData, replacer);
       const decodedData = JSON.parse(json, reviver);
       res.json(decodedData)
