@@ -27,8 +27,26 @@ function reviver(_key: string, value: any): any {
 
 router.use(express.json())
 
-router.get('/', (req, res)=> {
-    res.send("Hello")
+router.get('/', async (req, res)=> {
+  try {
+    const query = await prisma.complainer.findMany({
+      include: {
+        subdistrict: true,
+        district: true,
+        province: true,
+        complain: true
+      }
+    });
+    if(query.length > 0) {
+      const json = JSON.stringify(query, replacer);
+      const decodedData = JSON.parse(json, reviver);
+      res.json(decodedData) 
+    } else {
+      res.json(false)
+    }
+  } catch(e) {
+      res.json(false)
+  }
 })
 
 router.get('/:complainerID', async(req, res) => {

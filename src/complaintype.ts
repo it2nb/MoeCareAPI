@@ -69,6 +69,32 @@ router.post('/insert', urlencodedParser, async(req, res) => {
   }
 });
 
+router.post('/update', urlencodedParser, async(req, res) => {
+  const {complaintypeID, complaintypeName} = req.body
+
+  try{
+    const insertData = await prisma.$executeRaw`UPDATE complaintype Set complaintypeName=${complaintypeName} Where complaintypeID=${complaintypeID}`;
+      const json = JSON.stringify(insertData, replacer);
+      const decodedData = JSON.parse(json, reviver);
+      res.json(decodedData)
+  } catch(e) {
+      res.send(false)
+  }
+});
+
+router.post('/delete', urlencodedParser, async(req, res) => {
+  const {complaintypeID, complaintypeName} = req.body
+
+  try{
+    const insertData = await prisma.$executeRaw`DELETE From complaintype Where complaintypeID=${complaintypeID}`;
+      const json = JSON.stringify(insertData, replacer);
+      const decodedData = JSON.parse(json, reviver);
+      res.json(decodedData)
+  } catch(e) {
+      res.send(false)
+  }
+});
+
 router.get("/:universalURL", (req, res) => { 
   res.send("404 URL NOT FOUND"); 
 }); 
