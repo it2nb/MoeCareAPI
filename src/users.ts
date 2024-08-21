@@ -27,8 +27,24 @@ function reviver(_key: string, value: any): any {
 
 router.use(express.json())
 
-router.get('/', (req, res)=> {
-    res.send("Hello")
+router.get('/', async (req, res)=> {
+  try {
+    const query = await prisma.users.findMany({
+      include: {
+        agency: true,
+        caseagency: true
+      }
+    });
+    if(query.length > 0) {
+      const json = JSON.stringify(query, replacer);
+      const decodedData = JSON.parse(json, reviver);
+      res.json(decodedData) 
+    } else {
+      res.json(false)
+    }
+  } catch(e) {
+      res.json(false)
+  }
 })
 
 router.get('/:userID', async(req, res) => {

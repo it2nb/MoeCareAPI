@@ -119,6 +119,38 @@ router.get('/complainer/:complainerID', async (req, res)=> {
   }
 })
 
+router.get('/agency/:agencyID', async (req, res)=> {
+  var params = req.params
+  try{
+    const query = await prisma.complain.findMany({
+      include: {
+        complaintype: true,
+        caseagency: {
+          include: {
+            toagency: true,
+            users: true,
+            agency: true,
+            complainer: true
+          },
+          orderBy: {
+            caseagencyDate: 'desc'
+          }
+        },
+        agency: true,
+        complainer: true,
+      },
+      where: {
+        agencyID: parseInt(params.agencyID)
+      }
+    })
+    const json = JSON.stringify(query, replacer)
+    const decodedData = JSON.parse(json, reviver)
+    res.json(decodedData)
+  } catch(e) {
+    res.json({result: false})
+  }
+})
+
 router.get('/complaintype/:complaintypeID', async (req, res)=> {
   var params = req.params
   try{
