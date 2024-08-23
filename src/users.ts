@@ -85,11 +85,29 @@ router.post('/login', urlencodedParser, async(req, res) => {
     }
 })
 
-router.post('/update', urlencodedParser, async (req, res)=>{
-  const {userID, userName, userPassword, userStatus, userType, agencyID} = req.body
+router.post('/insert', urlencodedParser, async (req, res)=>{
+  const {userName, userPassword, userStatus, userType, userFirstName, userLastName, userPhone, userEmail, agencyID} = req.body
   try {
-    const query = await prisma.$queryRaw`UPDATE users SET userName=${userName}, userStatus=${userStatus}, userType=${userType}, agencyID=${agencyID} Where userID=${userID}`
+    const query = await prisma.$queryRaw`INSERT Ignore Into users(userName, userPassword, userStatus, userType, userFirstName, userLastName, userPhone, userEmail, agencyID) Value (${userName}, md5(${userPassword}), ${userStatus}, ${userType}, ${userFirstName}, ${userLastName}, ${userPhone}, ${userEmail}, ${agencyID})`
     const json = JSON.stringify(query, replacer)
+    const decodedData = JSON.parse(json, reviver)
+    res.json(decodedData)
+  } catch(e) {
+    res.send(false)
+  }
+})
+
+router.post('/update', urlencodedParser, async (req, res)=>{
+  const {userID, userName, userPassword, userStatus, userType, userFirstName, userLastName, userPhone, userEmail, agencyID} = req.body
+  try {
+    let json = null
+    const query = await prisma.$queryRaw`UPDATE users SET userName=${userName}, userStatus=${userStatus}, userType=${userType}, userFirstName=${userFirstName}, userLastName=${userLastName}, userPhone=${userPhone}, userEmail=${userEmail}, agencyID=${agencyID} Where userID=${userID}`
+    if(userPassword) {
+      const query2 = await prisma.$queryRaw`UPDATE users SET userPassword=md5(${userPassword}) Where userID=${userID}`
+      json = JSON.stringify((query || query2), replacer)
+    } else {
+      json = JSON.stringify(query, replacer)
+    }  
     const decodedData = JSON.parse(json, reviver)
     res.json(decodedData)
   } catch(e) {
