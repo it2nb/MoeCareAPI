@@ -115,6 +115,19 @@ router.post('/update', urlencodedParser, async (req, res)=>{
   }
 })
 
+router.post('/delete', urlencodedParser, async(req, res) => {
+  const {userID} = req.body
+
+  try{
+    const insertData = await prisma.$executeRaw`DELETE From users Where userID=${userID}`;
+      const json = JSON.stringify(insertData, replacer);
+      const decodedData = JSON.parse(json, reviver);
+      res.json(decodedData)
+  } catch(e) {
+      res.send(false)
+  }
+});
+
 router.get("/:universalURL", (req, res) => { 
   res.send("404 URL NOT FOUND"); 
 }); 
