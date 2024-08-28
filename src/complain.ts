@@ -334,7 +334,7 @@ router.post('/delete', urlencodedParser, async (req, res)=> {
   }
 })
 
-router.get('/count', async (req, res)=>{
+router.get('/count/all', async (req, res)=>{
   try{
     // const query = await prisma.complain.aggregate({
     //   _count: {
