@@ -231,7 +231,8 @@ router.get('/countcomplain/casetoagency/:agencyID', async (req, res)=>{
     //   }
     // })
     var params = req.params
-    const query = await prisma.$queryRaw`SELECT sendcase.allQty as allQty, newcase.newQty as newQty, completecase.completeQty as completeQty From caseagency
+    let query = Array();
+    query = await prisma.$queryRaw`SELECT sendcase.allQty as allQty, newcase.newQty as newQty, completecase.completeQty as completeQty From caseagency
     Left Join (
       SELECT count(distinct complainID) as allQty, casetoagencyID From caseagency 
       Where casetoagencyID=${parseInt(params.agencyID)}
@@ -258,9 +259,16 @@ router.get('/countcomplain/casetoagency/:agencyID', async (req, res)=>{
     ) as completecase On caseagency.casetoagencyID=completecase.casetoagencyID
     Where caseagency.casetoagencyID=${parseInt(params.agencyID)}
     Group By caseagency.casetoagencyID`;
-    const json = JSON.stringify(query, replacer);
-    const decodedData = JSON.parse(json, reviver);
-    res.json(decodedData) 
+    // const json = JSON.stringify(query, replacer);
+    // const decodedData = JSON.parse(json, reviver);
+    // res.json(decodedData) 
+    if(query.length > 0) {
+      const json = JSON.stringify(query, replacer);
+      const decodedData = JSON.parse(json, reviver);
+      res.json(decodedData) 
+    } else {
+      res.json(false)
+    }
   } catch(e) {
     res.send(false)
   }
